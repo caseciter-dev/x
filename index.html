@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>CiteCase - Updates From X</title>
+  <style>
+    /* Default Light Mode Theme */
+    :root {
+      --bg: #ffffff;
+      --card-bg: #ffffff;
+      --card-border: #eff3f4;
+      --text-main: #0f1419;
+      --text-muted: #536471;
+      --accent: #1d9bf0;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --radius: 16px;
+    }
+
+    /* Light Theme Override */
+    [data-theme="light"] {
+      --bg: #ffffff;
+      --card-bg: #ffffff;
+      --card-border: #eff3f4;
+      --text-main: #0f1419;
+      --text-muted: #536471;
+      --accent: #1d9bf0;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Explicit Dark Theme Override */
+    [data-theme="dark"] {
+      --bg: #000000;
+      --card-bg: #16181c;
+      --card-border: #2f3336;
+      --text-main: #e7e9ea;
+      --text-muted: #71767b;
+      --accent: #1d9bf0;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 1.5rem 0.85rem;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      width: 100%;
+      transition: max-width 0.3s ease-in-out;
+      position: relative;
+    }
+
+    .container.cols-2 { max-width: 1000px; }
+    .container.cols-3 { max-width: 1400px; }
+    .container.cols-4 { max-width: 1800px; }
+
+    /* Centralized Header */
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      position: relative;
+    }
+
+    .settings-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+
+    .settings-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: clamp(0.95rem, 3vw, 1.1rem);
+      margin-bottom: 0.75rem;
+    }
+
+    /* Button Toggle Groups inside Settings */
+    .btn-toggle-group {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 3px;
+    }
+
+    .btn-theme {
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      padding: 0.5rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-theme:hover {
+      color: var(--text-main);
+    }
+
+    .btn-theme.active {
+      background-color: var(--accent);
+      color: #ffffff;
+    }
+
+    /* Feed Layouts */
+    #feed {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    #feed.grid-2col .batch-group {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+
+    #feed.grid-3col .batch-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    #feed.grid-4col .batch-group {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+    }
+
+    .feed-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      box-shadow: var(--shadow-sm);
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .feed-card .twitter-tweet,
+    .feed-card iframe {
+      margin: 0 auto !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      border-radius: 12px;
+    }
+
+    .feed-card img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      margin: 0.5rem 0;
+      display: block;
+    }
+
+    .feed-card video {
+      width: 100% !important;
+      height: auto !important;
+      border-radius: 12px;
+      background: #000;
+    }
+
+    /* Slideshow Mode Styles */
+    #feed.slideshow-mode {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 65vh;
+    }
+
+    #feed.slideshow-mode .batch-group {
+      display: contents;
+    }
+
+    #feed.slideshow-mode .feed-card {
+      display: none;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    #feed.slideshow-mode .feed-card.active-slide {
+      display: flex;
+    }
+
+    .slideshow-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .btn-slideshow-nav {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 0.6rem 1.2rem;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-slideshow-nav:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .slide-counter {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    /* Load More Container */
+    .load-more-container {
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .btn-load-more {
+      background-color: var(--card-bg);
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+      padding: 0.85rem 2rem;
+      border-radius: 9999px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-load-more:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Settings Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      width: 90%;
+      max-width: 460px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-header h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      color: var(--text-main);
+    }
+
+    .setting-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .setting-group label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    /* Loader */
+    .loader {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+      #feed.grid-4col .batch-group {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      #feed.grid-3col .batch-group,
+      #feed.grid-4col .batch-group {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 1.25rem 0.75rem; }
+      #feed.grid-2col .batch-group,
+      #feed.grid-3col .batch-group,
+      #feed.grid-4col .batch-group {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <!-- Twitter Widget Script -->
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</head>
+<body>
+
+  <div class="container" id="main-container">
+    <header>
+      <button class="settings-btn" id="open-settings-btn" onclick="toggleSettingsModal(true)" aria-label="Settings">
+        ⚙️
+      </button>
+
+      <div class="brand-badge">
+        <span>𝕏 Feed</span>
+      </div>
+      <h1>CiteCase</h1>
+      <p class="subtitle">Updates From X</p>
+    </header>
+
+    <div id="feed">
+      <div class="loader">Loading Twitter feed...</div>
+    </div>
+
+    <!-- Slideshow Nav Overlay -->
+    <div class="slideshow-controls hidden" id="slideshow-controls">
+      <button class="btn-slideshow-nav" onclick="navigateSlide(-1)">← Prev</button>
+      <span class="slide-counter" id="slide-counter">1 / 1</span>
+      <button class="btn-slideshow-nav" onclick="navigateSlide(1)">Next →</button>
+    </div>
+
+    <div class="load-more-container" id="load-more-box">
+      <button class="btn-load-more hidden" id="load-more-btn" onclick="loadNextBatch()">
+        Load More Posts
+      </button>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settings-modal" onclick="handleOverlayClick(event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Settings</h2>
+        <button class="modal-close" onclick="toggleSettingsModal(false)">&times;</button>
+      </div>
+
+      <div class="setting-group">
+        <label>Theme</label>
+        <div class="btn-toggle-group">
+          <button class="btn-theme" id="theme-dark-btn" onclick="setTheme('dark')">Dark</button>
+          <button class="btn-theme" id="theme-light-btn" onclick="setTheme('light')">Light</button>
+          <button class="btn-theme" id="theme-auto-btn" onclick="setTheme('auto')">Auto</button>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <label>Display Mode / Layout</label>
+        <div class="btn-toggle-group">
+          <button class="btn-theme" id="modal-1col-btn" onclick="setLayout(1)">1-Col</button>
+          <button class="btn-theme" id="modal-2col-btn" onclick="setLayout(2)">2-Col</button>
+          <button class="btn-theme" id="modal-3col-btn" onclick="setLayout(3)">3-Col</button>
+          <button class="btn-theme" id="modal-4col-btn" onclick="setLayout(4)">4-Col</button>
+          <button class="btn-theme" id="modal-slide-btn" onclick="setLayout('slideshow')">Slideshow</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const GHOST_HOST = 'https://www.caseciter.com';
+    const API_KEY = '8f0af60ba70373e57f9dd5e3ff';
+    const SLUG = 'x';
+
+    const BATCH_SIZE = 20;
+    let initialBatchNodes = [];
+    let loadMoreNodes = [];
+    let currentRenderedCount = 0;
+    let currentSlideIndex = 0;
+
+    function getSavedTheme() {
+      return localStorage.getItem('theme_preference') || 'light';
+    }
+
+    function getSavedColumns() {
+      const saved = localStorage.getItem('column_preference');
+      if (saved === 'slideshow') return 'slideshow';
+      return parseInt(saved, 10) || 1;
+    }
+
+    function getActiveThemeMode() {
+      const savedTheme = getSavedTheme();
+      if (savedTheme === 'auto') {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      return savedTheme;
+    }
+
+    function applyEmbedTheme() {
+      const activeTheme = getActiveThemeMode();
+      
+      document.querySelectorAll('.twitter-tweet').forEach(tweet => {
+        tweet.setAttribute('data-theme', activeTheme);
+      });
+
+      if (window.twttr && window.twttr.widgets) {
+        document.querySelectorAll('iframe[id^="twitter-widget-"]').forEach(iframe => {
+          const src = new URL(iframe.src);
+          src.searchParams.set('theme', activeTheme);
+          iframe.src = src.toString();
+        });
+        window.twttr.widgets.load(document.getElementById('feed'));
+      }
+    }
+
+    function setTheme(theme) {
+      localStorage.setItem('theme_preference', theme);
+      document.querySelectorAll('#theme-dark-btn, #theme-light-btn, #theme-auto-btn').forEach(btn => btn.classList.remove('active'));
+
+      if (theme === 'auto') {
+        document.documentElement.removeAttribute('data-theme');
+        document.getElementById('theme-auto-btn').classList.add('active');
+      } else {
+        document.documentElement.setAttribute('data-theme', theme);
+        const activeBtn = document.getElementById(`theme-${theme}-btn`);
+        if (activeBtn) activeBtn.classList.add('active');
+      }
+
+      applyEmbedTheme();
+    }
+
+    function setLayout(cols) {
+      localStorage.setItem('column_preference', cols);
+
+      const feed = document.getElementById('feed');
+      const container = document.getElementById('main-container');
+      const slideshowControls = document.getElementById('slideshow-controls');
+      const loadMoreBox = document.getElementById('load-more-box');
+
+      feed.classList.remove('grid-2col', 'grid-3col', 'grid-4col', 'slideshow-mode');
+      container.classList.remove('cols-2', 'cols-3', 'cols-4');
+
+      document.querySelectorAll('#modal-1col-btn, #modal-2col-btn, #modal-3col-btn, #modal-4col-btn, #modal-slide-btn')
+        .forEach(btn => btn.classList.remove('active'));
+
+      if (cols === 'slideshow') {
+        feed.classList.add('slideshow-mode');
+        slideshowControls.classList.remove('hidden');
+        loadMoreBox.classList.add('hidden');
+        document.getElementById('modal-slide-btn').classList.add('active');
+        showSlide(currentSlideIndex);
+      } else {
+        slideshowControls.classList.add('hidden');
+        loadMoreBox.classList.remove('hidden');
+
+        // Reset visibility of feed cards
+        document.querySelectorAll('.feed-card').forEach(card => card.classList.remove('active-slide'));
+
+        if (cols === 2) {
+          feed.classList.add('grid-2col');
+          container.classList.add('cols-2');
+          document.getElementById('modal-2col-btn').classList.add('active');
+        } else if (cols === 3) {
+          feed.classList.add('grid-3col');
+          container.classList.add('cols-3');
+          document.getElementById('modal-3col-btn').classList.add('active');
+        } else if (cols === 4) {
+          feed.classList.add('grid-4col');
+          container.classList.add('cols-4');
+          document.getElementById('modal-4col-btn').classList.add('active');
+        } else {
+          document.getElementById('modal-1col-btn').classList.add('active');
+        }
+      }
+
+      if (window.twttr && window.twttr.widgets) {
+        window.twttr.widgets.load(feed);
+      }
+    }
+
+    function showSlide(index) {
+      const cards = document.querySelectorAll('.feed-card');
+      if (cards.length === 0) return;
+
+      if (index >= cards.length) currentSlideIndex = 0;
+      else if (index < 0) currentSlideIndex = cards.length - 1;
+      else currentSlideIndex = index;
+
+      cards.forEach((card, i) => {
+        if (i === currentSlideIndex) {
+          card.classList.add('active-slide');
+        } else {
+          card.classList.remove('active-slide');
+        }
+      });
+
+      document.getElementById('slide-counter').innerText = `${currentSlideIndex + 1} / ${cards.length}`;
+
+      if (window.twttr && window.twttr.widgets) {
+        window.twttr.widgets.load(cards[currentSlideIndex]);
+      }
+    }
+
+    function navigateSlide(direction) {
+      showSlide(currentSlideIndex + direction);
+    }
+
+    // Keyboard navigation for slideshow
+    document.addEventListener('keydown', (e) => {
+      if (localStorage.getItem('column_preference') === 'slideshow') {
+        if (e.key === 'ArrowRight') navigateSlide(1);
+        if (e.key === 'ArrowLeft') navigateSlide(-1);
+      }
+    });
+
+    function toggleSettingsModal(show) {
+      const modal = document.getElementById('settings-modal');
+      if (show) {
+        modal.classList.add('open');
+      } else {
+        modal.classList.remove('open');
+      }
+    }
+
+    function handleOverlayClick(e) {
+      if (e.target.id === 'settings-modal') {
+        toggleSettingsModal(false);
+      }
+    }
+
+    async function fetchPage() {
+      const endpoint = `${GHOST_HOST}/ghost/api/content/pages/slug/${SLUG}/?key=${API_KEY}&fields=title,html&v=${Date.now()}`;
+
+      try {
+        const response = await fetch(endpoint);
+        const data = await response.json();
+        
+        if (data.pages && data.pages.length > 0) {
+          const page = data.pages[0];
+          
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = page.html;
+          const allChildren = Array.from(tempDiv.children);
+
+          let lineIndex = allChildren.findIndex(el => 
+            el.tagName.toLowerCase() === 'hr' || el.classList.contains('kg-card-hr')
+          );
+
+          if (lineIndex !== -1) {
+            initialBatchNodes = allChildren.slice(0, lineIndex);
+            loadMoreNodes = allChildren.slice(lineIndex + 1);
+          } else {
+            initialBatchNodes = allChildren.slice(0, BATCH_SIZE);
+            loadMoreNodes = allChildren.slice(BATCH_SIZE);
+          }
+
+          const feedContainer = document.getElementById('feed');
+          feedContainer.innerHTML = '';
+
+          if (initialBatchNodes.length === 0 && loadMoreNodes.length === 0) {
+            feedContainer.innerHTML = '<div class="loader">No posts available.</div>';
+            return;
+          }
+
+          renderBatch(initialBatchNodes);
+
+          const loadMoreBtn = document.getElementById('load-more-btn');
+          if (loadMoreNodes.length > 0) {
+            loadMoreBtn.innerText = `Load More (${loadMoreNodes.length} remaining)`;
+            loadMoreBtn.classList.remove('hidden');
+          } else {
+            loadMoreBtn.classList.add('hidden');
+          }
+
+          if (getSavedColumns() === 'slideshow') {
+            setLayout('slideshow');
+          }
+
+        } else {
+          document.getElementById('feed').innerHTML = '<div class="loader">No posts found for slug "x".</div>';
+        }
+      } catch (err) {
+        console.error('Error fetching page:', err);
+        document.getElementById('feed').innerHTML = '<div class="loader">Unable to load feed at this time.</div>';
+      }
+    }
+
+    function renderBatch(nodeList) {
+      if (!nodeList || nodeList.length === 0) return;
+
+      const feedContainer = document.getElementById('feed');
+      const batchWrapper = document.createElement('div');
+      batchWrapper.className = 'batch-group';
+
+      const activeTheme = getActiveThemeMode();
+
+      nodeList.forEach(child => {
+        if (child.tagName.toLowerCase() === 'hr' || child.classList.contains('kg-card-hr')) {
+          return;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'feed-card';
+
+        if (child.classList && child.classList.contains('twitter-tweet')) {
+          child.setAttribute('data-theme', activeTheme);
+        } else {
+          child.querySelectorAll('.twitter-tweet').forEach(el => el.setAttribute('data-theme', activeTheme));
+        }
+
+        card.innerHTML = `
+          <div class="card-content">
+            ${child.outerHTML}
+          </div>
+        `;
+
+        batchWrapper.appendChild(card);
+      });
+
+      feedContainer.appendChild(batchWrapper);
+
+      if (window.twttr && window.twttr.widgets) {
+        window.twttr.widgets.load(batchWrapper);
+      }
+    }
+
+    function loadNextBatch() {
+      const nextBatch = loadMoreNodes.slice(currentRenderedCount, currentRenderedCount + BATCH_SIZE);
+      renderBatch(nextBatch);
+
+      currentRenderedCount += nextBatch.length;
+
+      const loadMoreBtn = document.getElementById('load-more-btn');
+      const remaining = loadMoreNodes.length - currentRenderedCount;
+
+      if (remaining > 0) {
+        loadMoreBtn.innerText = `Load More (${remaining} remaining)`;
+        loadMoreBtn.classList.remove('hidden');
+      } else {
+        loadMoreBtn.classList.add('hidden');
+      }
+
+      if (getSavedColumns() === 'slideshow') {
+        showSlide(currentSlideIndex);
+      }
+    }
+
+    // Initialize user settings on page load
+    setTheme(getSavedTheme());
+    setLayout(getSavedColumns());
+
+    fetchPage();
+  </script>
+
+</body>
+</html>
