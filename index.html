@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>CiteCase - Updates From X</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --card-bg: #16181c;
+      --card-border: #2f3336;
+      --text-main: #e7e9ea;
+      --text-muted: #71767b;
+      --accent: #1d9bf0;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --radius: 16px;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f7f9f9;
+        --card-bg: #ffffff;
+        --card-border: #eff3f4;
+        --text-main: #0f1419;
+        --text-muted: #536471;
+        --accent: #1d9bf0;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 1.5rem 0.85rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      width: 100%;
+      transition: max-width 0.3s ease-in-out;
+    }
+
+    .container.cols-2 {
+      max-width: 1000px;
+    }
+
+    .container.cols-3 {
+      max-width: 1400px;
+    }
+
+    /* Centralized Header */
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: clamp(0.95rem, 3vw, 1.1rem);
+      margin-bottom: 0.75rem;
+    }
+
+    /* Centralized Layout Switcher Group */
+    .layout-switcher {
+      display: inline-flex;
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 3px;
+      box-shadow: var(--shadow-sm);
+      margin-top: 0.25rem;
+    }
+
+    .btn-layout {
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 16px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-layout:hover {
+      color: var(--text-main);
+    }
+
+    .btn-layout.active {
+      background-color: var(--accent);
+      color: #ffffff;
+    }
+
+    /* Feed Layouts */
+    #feed {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* 2-Column Grid Layout */
+    #feed.grid-2col .batch-group {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+
+    /* 3-Column Grid Layout */
+    #feed.grid-3col .batch-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .feed-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      box-shadow: var(--shadow-sm);
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .feed-card .twitter-tweet,
+    .feed-card iframe {
+      margin: 0 auto !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      border-radius: 12px;
+    }
+
+    .feed-card img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      margin: 0.5rem 0;
+      display: block;
+    }
+
+    .feed-card video {
+      width: 100% !important;
+      height: auto !important;
+      border-radius: 12px;
+      background: #000;
+    }
+
+    /* Action Bar */
+    .card-actions {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: 0.75rem;
+      margin-top: 0.75rem;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .btn-embed {
+      background: rgba(29, 155, 240, 0.1);
+      color: var(--accent);
+      border: 1px solid rgba(29, 155, 240, 0.2);
+      padding: 0.45rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-embed:hover {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    /* Load More Container */
+    .load-more-container {
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .btn-load-more {
+      background-color: var(--card-bg);
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+      padding: 0.85rem 2rem;
+      border-radius: 9999px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-load-more:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Loader */
+    .loader {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Responsive adjustments for smaller devices */
+    @media (max-width: 900px) {
+      #feed.grid-3col .batch-group {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 1.25rem 0.75rem; }
+      #feed.grid-2col .batch-group,
+      #feed.grid-3col .batch-group {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <!-- Twitter Widget Script -->
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</head>
+<body>
+
+  <div class="container" id="main-container">
+    <header>
+      <div class="brand-badge">
+        <span>𝕏 Feed</span>
+      </div>
+      <h1>CiteCase</h1>
+      <p class="subtitle">Updates From X</p>
+
+      <div class="layout-switcher">
+        <button class="btn-layout active" id="btn-1col" onclick="setLayout(1)">1-Col</button>
+        <button class="btn-layout" id="btn-2col" onclick="setLayout(2)">2-Col</button>
+        <button class="btn-layout" id="btn-3col" onclick="setLayout(3)">3-Col</button>
+      </div>
+    </header>
+
+    <div id="feed">
+      <div class="loader">Loading Twitter feed...</div>
+    </div>
+
+    <div class="load-more-container" id="load-more-box">
+      <button class="btn-load-more hidden" id="load-more-btn" onclick="loadNextBatch()">
+        Load More Posts
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const GHOST_HOST = 'https://www.caseciter.com';
+    const API_KEY = '8f0af60ba70373e57f9dd5e3ff';
+    const SLUG = 'x';
+
+    const BATCH_SIZE = 20;
+    let initialBatchNodes = [];
+    let loadMoreNodes = [];
+    let currentRenderedCount = 0;
+
+    async function fetchPage() {
+      const endpoint = `${GHOST_HOST}/ghost/api/content/pages/slug/${SLUG}/?key=${API_KEY}&fields=title,html&v=${Date.now()}`;
+
+      try {
+        const response = await fetch(endpoint);
+        const data = await response.json();
+        
+        if (data.pages && data.pages.length > 0) {
+          const page = data.pages[0];
+          
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = page.html;
+          const allChildren = Array.from(tempDiv.children);
+
+          // Detect divider line (<hr> or .kg-card-hr)
+          let lineIndex = allChildren.findIndex(el => 
+            el.tagName.toLowerCase() === 'hr' || el.classList.contains('kg-card-hr')
+          );
+
+          if (lineIndex !== -1) {
+            initialBatchNodes = allChildren.slice(0, lineIndex);
+            loadMoreNodes = allChildren.slice(lineIndex + 1);
+          } else {
+            initialBatchNodes = allChildren.slice(0, BATCH_SIZE);
+            loadMoreNodes = allChildren.slice(BATCH_SIZE);
+          }
+
+          const feedContainer = document.getElementById('feed');
+          feedContainer.innerHTML = '';
+
+          if (initialBatchNodes.length === 0 && loadMoreNodes.length === 0) {
+            feedContainer.innerHTML = '<div class="loader">No posts available.</div>';
+            return;
+          }
+
+          renderBatch(initialBatchNodes);
+
+          const loadMoreBtn = document.getElementById('load-more-btn');
+          if (loadMoreNodes.length > 0) {
+            loadMoreBtn.innerText = `Load More (${loadMoreNodes.length} remaining)`;
+            loadMoreBtn.classList.remove('hidden');
+          } else {
+            loadMoreBtn.classList.add('hidden');
+          }
+
+        } else {
+          document.getElementById('feed').innerHTML = '<div class="loader">No posts found for slug "x".</div>';
+        }
+      } catch (err) {
+        console.error('Error fetching page:', err);
+        document.getElementById('feed').innerHTML = '<div class="loader">Unable to load feed at this time.</div>';
+      }
+    }
+
+    function renderBatch(nodeList) {
+      if (!nodeList || nodeList.length === 0) return;
+
+      const feedContainer = document.getElementById('feed');
+      const batchWrapper = document.createElement('div');
+      batchWrapper.className = 'batch-group';
+
+      nodeList.forEach(child => {
+        if (child.tagName.toLowerCase() === 'hr' || child.classList.contains('kg-card-hr')) {
+          return;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'feed-card';
+
+        const link = child.querySelector('a');
+        const linkHref = link ? link.href : null;
+
+        card.innerHTML = `
+          <div class="card-content">
+            ${child.outerHTML}
+          </div>
+          ${linkHref ? `
+            <div class="card-actions">
+              <a href="${linkHref}" target="_blank" rel="noopener" class="btn-embed">
+                Open on X ↗
+              </a>
+            </div>
+          ` : ''}
+        `;
+
+        batchWrapper.appendChild(card);
+      });
+
+      feedContainer.appendChild(batchWrapper);
+
+      if (window.twttr && window.twttr.widgets) {
+        window.twttr.widgets.load(batchWrapper);
+      }
+    }
+
+    function loadNextBatch() {
+      const nextBatch = loadMoreNodes.slice(currentRenderedCount, currentRenderedCount + BATCH_SIZE);
+      renderBatch(nextBatch);
+
+      currentRenderedCount += nextBatch.length;
+
+      const loadMoreBtn = document.getElementById('load-more-btn');
+      const remaining = loadMoreNodes.length - currentRenderedCount;
+
+      if (remaining > 0) {
+        loadMoreBtn.innerText = `Load More (${remaining} remaining)`;
+        loadMoreBtn.classList.remove('hidden');
+      } else {
+        loadMoreBtn.classList.add('hidden');
+      }
+    }
+
+    function setLayout(cols) {
+      const feed = document.getElementById('feed');
+      const container = document.getElementById('main-container');
+
+      feed.classList.remove('grid-2col', 'grid-3col');
+      container.classList.remove('cols-2', 'cols-3');
+      
+      document.querySelectorAll('.btn-layout').forEach(btn => btn.classList.remove('active'));
+
+      if (cols === 2) {
+        feed.classList.add('grid-2col');
+        container.classList.add('cols-2');
+        document.getElementById('btn-2col').classList.add('active');
+      } else if (cols === 3) {
+        feed.classList.add('grid-3col');
+        container.classList.add('cols-3');
+        document.getElementById('btn-3col').classList.add('active');
+      } else {
+        document.getElementById('btn-1col').classList.add('active');
+      }
+
+      if (window.twttr && window.twttr.widgets) {
+        window.twttr.widgets.load(feed);
+      }
+    }
+
+    fetchPage();
+  </script>
+
+</body>
+</html>
